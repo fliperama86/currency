@@ -22,7 +22,9 @@ const CurrencyConverter = () => {
         `https://api.exchangerate-api.com/v4/latest/${inputCurrency}`
       );
       const rate = response.data.rates[outputCurrency];
-      setResult((Number(inputValue) * rate).toLocaleString());
+      setResult(
+        (Number(inputValue.replace(/[^0-9.]/g, "")) * rate).toLocaleString()
+      );
     } catch (error) {
       console.error("Error fetching conversion rates", error);
     }
