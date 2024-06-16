@@ -2,6 +2,7 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
 
+const flags = ["🇧🇷", "🇺🇸", "🇪🇺", "🇬🇧", "🇯🇵"];
 const currencies = ["BRL", "USD", "EUR", "GBP", "JPY"];
 
 const CurrencyConverter = () => {
@@ -18,13 +19,11 @@ const CurrencyConverter = () => {
 
   const convertCurrency = async () => {
     try {
-      const response = await axios.get(
-        `https://api.exchangerate-api.com/v4/latest/${inputCurrency}`
-      );
-      const rate = response.data.rates[outputCurrency];
-      setResult(
-        (Number(inputValue.replace(/[^0-9.]/g, "")) * rate).toLocaleString()
-      );
+      const inputNumber = Number(inputValue.replace(/[^0-9.]/g, ""));
+      const response = await axios.get(`/${inputCurrency}`);
+      const rate = response.data[outputCurrency];
+      const result = inputNumber * rate;
+      setResult(Number(result).toLocaleString());
     } catch (error) {
       console.error("Error fetching conversion rates", error);
     }
@@ -48,13 +47,33 @@ const CurrencyConverter = () => {
     }
   };
 
+  const swapCurrencies = () => {
+    setInputCurrency(outputCurrency);
+    setOutputCurrency(inputCurrency);
+  };
+
   const handleValueChange = (value: string) => {
     setInputValue(value.replace(/[^0-9.]/g, ""));
   };
 
   return (
     <div className="min-h-[100svh] text-black flex flex-col items-center justify-center bg-gray-100 p-2">
-      <div className="w-full max-w-md">
+      <div className="w-full max-w-md space-y-2">
+        <div className="flex w-full space-x-2">
+          {currencies.map((currency) => (
+            <div
+              key={`in_${currency}`}
+              onClick={() => setInputCurrency(currency)}
+              className={`rounded-sm text-3xl flex justify-center flex-grow border cursor-default ${
+                inputCurrency === currency
+                  ? "border-blue-500 bg-blue-100"
+                  : "border-gray-300 bg-white"
+              }`}
+            >
+              {flags[currencies.indexOf(currency)]}
+            </div>
+          ))}
+        </div>
         <div className="mb-2 flex space-x-2">
           <div className="w-full">
             <input
@@ -64,17 +83,29 @@ const CurrencyConverter = () => {
               onChange={(e) => handleValueChange(e.target.value)}
             />
           </div>
-          <select
-            className="w-28 px-4 py-2 text-xl border rounded overflow-hidden"
-            value={inputCurrency}
-            onChange={(e) => setInputCurrency(e.target.value)}
+        </div>
+        <div className="w-full justify-center flex">
+          <button
+            onClick={swapCurrencies}
+            className="px-2 py-1 text-3xl bg-gray-200 rounded-sm border border-gray-300"
           >
-            {currencies.map((currency) => (
-              <option key={currency} value={currency}>
-                {currency}
-              </option>
-            ))}
-          </select>
+            🔄
+          </button>
+        </div>
+        <div className="flex w-full space-x-2">
+          {currencies.map((currency) => (
+            <div
+              key={`out_${currency}`}
+              onClick={() => setOutputCurrency(currency)}
+              className={`bg-white rounded-sm text-3xl flex justify-center flex-grow border cursor-default ${
+                outputCurrency === currency
+                  ? "border-blue-500 bg-blue-100"
+                  : "border-gray-300 bg-white"
+              }`}
+            >
+              {flags[currencies.indexOf(currency)]}
+            </div>
+          ))}
         </div>
         <div className="mb-4 flex space-x-2">
           <div className="w-full">
@@ -82,17 +113,6 @@ const CurrencyConverter = () => {
               {result}
             </div>
           </div>
-          <select
-            className="w-28 px-4 py-2 text-xl border rounded overflow-hidden"
-            value={outputCurrency}
-            onChange={(e) => setOutputCurrency(e.target.value)}
-          >
-            {currencies.map((currency) => (
-              <option key={currency} value={currency}>
-                {currency}
-              </option>
-            ))}
-          </select>
         </div>
         <div className="grid grid-cols-3 gap-2">
           {["1", "2", "3", "4", "5", "6", "7", "8", "9", "C", "0", "←"].map(
