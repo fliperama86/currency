@@ -97,7 +97,7 @@ const CurrencyConverter = () => {
             <div
               key={`out_${currency}`}
               onClick={() => setOutputCurrency(currency)}
-              className={`bg-white rounded-sm text-3xl flex justify-center flex-grow border cursor-default ${
+              className={`rounded-sm text-3xl flex justify-center flex-grow border cursor-default ${
                 outputCurrency === currency
                   ? "border-blue-500 bg-blue-100"
                   : "border-gray-300 bg-white"
