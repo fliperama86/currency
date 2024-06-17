@@ -20,8 +20,10 @@ const CurrencyConverter = () => {
   const convertCurrency = async () => {
     try {
       const inputNumber = Number(inputValue.replace(/[^0-9.]/g, ""));
-      const response = await axios.get(`/${inputCurrency}`);
-      const rate = response.data[outputCurrency];
+      const response = await axios.get(
+        `api/pair?input=${inputCurrency}&output=${outputCurrency}`
+      );
+      const rate = response.data;
       const result = inputNumber * rate;
       setResult(Number(result).toLocaleString());
     } catch (error) {
