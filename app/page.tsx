@@ -1,5 +1,5 @@
 "use client";
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useCallback, useMemo, use } from "react";
 import axios from "axios";
 
 const flags = ["🇧🇷", "🇺🇸", "🇪🇺", "🇬🇧", "🇯🇵"];
@@ -10,26 +10,43 @@ const CurrencyConverter = () => {
   const [inputCurrency, setInputCurrency] = useState("USD");
   const [outputCurrency, setOutputCurrency] = useState("BRL");
   const [result, setResult] = useState("0");
+  const [isLoading, setIsLoading] = useState(false);
+  const [rate, setRate] = useState<number | null>(null);
 
-  useEffect(() => {
-    if (inputValue !== "") {
-      convertCurrency();
+  const getRate = useCallback(async () => {
+    if (rate !== null) {
+      return rate;
     }
-  }, [inputValue, inputCurrency, outputCurrency]);
-
-  const convertCurrency = async () => {
     try {
-      const inputNumber = Number(inputValue.replace(/[^0-9.]/g, ""));
       const response = await axios.get(
         `api/pair?input=${inputCurrency}&output=${outputCurrency}`
       );
       const rate = response.data;
-      const result = inputNumber * rate;
-      setResult(Number(result).toLocaleString());
+      setRate(rate);
     } catch (error) {
       console.error("Error fetching conversion rates", error);
     }
-  };
+  }, [inputCurrency, outputCurrency, rate]);
+
+  const inputValueNumber = useMemo(
+    () => Number(inputValue.replace(/[^0-9.]/g, "")) ?? 0,
+    [inputValue]
+  );
+
+  const convertCurrency = useCallback(
+    async (value: number) => {
+      const currentRate = await getRate();
+      if (currentRate) {
+        setResult(
+          (currentRate * value).toLocaleString(undefined, {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })
+        );
+      }
+    },
+    [getRate]
+  );
 
   const setInputValue = (value: string) => {
     let newValue = Number(value.replace(/[^0-9.]/g, "")) ?? 0;
@@ -57,6 +74,14 @@ const CurrencyConverter = () => {
   const handleValueChange = (value: string) => {
     setInputValue(value.replace(/[^0-9.]/g, ""));
   };
+
+  useEffect(() => {
+    setRate(null);
+  }, [inputCurrency, outputCurrency]);
+
+  useEffect(() => {
+    convertCurrency(inputValueNumber);
+  }, [convertCurrency, inputValueNumber]);
 
   return (
     <div className="min-h-[100svh] text-black flex flex-col items-center justify-center bg-gray-100 p-2">
