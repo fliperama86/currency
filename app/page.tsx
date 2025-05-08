@@ -2,13 +2,13 @@
 import React, { useState, useEffect, useCallback, useMemo } from "react";
 import axios from "axios";
 
-const flags = ["🇧🇷", "🇺🇸", "🇪🇺", "🇬🇧", "🇯🇵"];
-const currencies = ["BRL", "USD", "EUR", "GBP", "JPY"];
+const flags = ["🇧🇷", "🇺🇸", "🇪🇺", "🇬🇧", "🇯🇵", "₿"];
+const currencies = ["BRL", "USD", "EUR", "GBP", "JPY", "BTC"];
 
 const CurrencyConverter = () => {
   const [inputValue, setInputValueState] = useState("0");
   const [inputCurrency, setInputCurrency] = useState("USD");
-  const [outputCurrency, setOutputCurrency] = useState("BRL");
+  const [outputCurrency, setOutputCurrency] = useState("BTC");
   const [result, setResult] = useState("0");
   const [isLoading, setIsLoading] = useState(true);
   const [allRates, setAllRates] = useState<{ [key: string]: number } | null>(
