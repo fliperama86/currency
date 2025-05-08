@@ -152,7 +152,7 @@ const CurrencyConverter = () => {
     <div className="min-h-[100svh] text-black flex flex-col items-center justify-center bg-gray-100 p-2">
       <div className="w-full max-w-md space-y-2">
         <div className="flex w-full space-x-2">
-          {currencies.map((currency) => (
+          {currencies.map((currency, index) => (
             <div
               key={`in_${currency}`}
               onClick={() => setInputCurrency(currency)}
@@ -162,7 +162,7 @@ const CurrencyConverter = () => {
                   : "border-gray-300 bg-white hover:bg-gray-50"
               }`}
             >
-              {flags[currencies.indexOf(currency)]}
+              <span className={`${currency === 'BTC' ? 'text-orange-500' : ''}`}>{flags[index]}</span>
             </div>
           ))}
         </div>
@@ -185,7 +185,7 @@ const CurrencyConverter = () => {
           </button>
         </div>
         <div className="flex w-full space-x-2">
-          {currencies.map((currency) => (
+          {currencies.map((currency, index) => (
             <div
               key={`out_${currency}`}
               onClick={() => setOutputCurrency(currency)}
@@ -195,7 +195,7 @@ const CurrencyConverter = () => {
                   : "border-gray-300 bg-white hover:bg-gray-50"
               }`}
             >
-              {flags[currencies.indexOf(currency)]}
+              <span className={`${currency === 'BTC' ? 'text-orange-500' : ''}`}>{flags[index]}</span>
             </div>
           ))}
         </div>
